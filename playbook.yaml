@@ -18,4 +18,10 @@
       command: export PATH=$PATH:/users/jcavallo/local/go/bin
     - name : Install Someta on all Hosts
       command: go install github.com/jsommers/someta@latest
+    - name: Clone a repo with separate git directory
+      git:
+        repo: https://github.com/jsommers/ELF.git
+        dest: /users/jcavallo/
+    - name : Run Cloudlab Setup Scipt ~ this may take some time
+      command: ./users/jcavallo/ELF/exptscripts/cloudlab_setup.sh
     
