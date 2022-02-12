@@ -1,28 +1,21 @@
----
-- name: Update web servers
-  hosts: webservers
-  remote_user: root
-
+- hosts: servers
+  remote_user: jcavallo
   tasks:
-  - name: Ensure apache is at the latest version
-    ansible.builtin.yum:
-      name: httpd
-      state: latest
-  - name: Write the apache config file
-    ansible.builtin.template:
-      src: /srv/httpd.j2
-      dest: /etc/httpd.conf
-
-- name: Update db servers
-  hosts: databases
-  remote_user: root
-
-  tasks:
-  - name: Ensure postgresql is at the latest version
-    ansible.builtin.yum:
-      name: postgresql
-      state: latest
-  - name: Ensure that postgresql is started
-    ansible.builtin.service:
-      name: postgresql
-      state: started
+    - name: Copying Go source code
+      become: true 
+      copy:
+        src: /Users/jamescavallo/Desktop/go1.17.7.linux-amd64.tar.gz
+        dest: /users/jcavallo
+    - name: Creates directory
+      file:
+        path: /users/jcavallo/local/go
+        state: directory
+    - name: Install Go
+      command: rm -rf /users/jcavallo/local/go 
+    - name: Install Go pt2
+      command: tar -C /users/jcavallo/local -xzf /users/jcavallo/go1.17.7.linux-amd64.tar.gz
+    - name : Set Go path
+      command: export PATH=$PATH:/users/jcavallo/local/go/bin
+    - name : Install Someta on all Hosts
+      command: go install github.com/jsommers/someta@latest
+    
