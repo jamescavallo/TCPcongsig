@@ -1,12 +1,13 @@
 - hosts: servers
   remote_user: jcavallo
+  become: yes
   tasks:
-    - name: Copying Go source code
-      become: true 
-      copy:
-        src: /Users/jamescavallo/Desktop/go1.17.7.linux-amd64.tar.gz
-        dest: /users/jcavallo
-    - name: Creates directory
+    - name: Download Go Source
+      get_url:
+        url: https://go.dev/dl/go1.17.7.linux-amd64.tar.gz
+        dest: /users/jcavallo/go1.17.7.linux-amd64.tar.gz
+        mode: '0440'
+    - name: Create directory
       file:
         path: /users/jcavallo/local/go
         state: directory
@@ -14,14 +15,24 @@
       command: rm -rf /users/jcavallo/local/go 
     - name: Install Go pt2
       command: tar -C /users/jcavallo/local -xzf /users/jcavallo/go1.17.7.linux-amd64.tar.gz
-    - name : Set Go path
-      command: export PATH=$PATH:/users/jcavallo/local/go/bin
     - name : Install Someta on all Hosts
-      command: go install github.com/jsommers/someta@latest
+      command: chdir=/users/jcavallo/local/go/bin ./go install github.com/jsommers/someta@latest
     - name: Clone a repo with separate git directory
       git:
         repo: https://github.com/jsommers/ELF.git
-        dest: /users/jcavallo/
-    - name : Run Cloudlab Setup Scipt ~ this may take some time
-      command: ./users/jcavallo/ELF/exptscripts/cloudlab_setup.sh
+        dest: /users/jcavallo/ELF
+    - name: Give insecure permissions to an existing file
+      file:
+        path: /users/jcavallo/ELF/exptscripts/cloudlab_setup.sh
+        mode: '0555'
+    - name: Remove the rate limit on all hosts
+      command: sysctl -w net.ipv4.icmp_ratelimit=0
+      become: yes
+      become_user: root
+    - name : Run Setup on the "in" node (This may take a while)
+      become: yes
+      become_user: root
+      shell: /users/jcavallo/ELF/exptscripts/cloudlab_setup.sh
+      when: ansible_hostname == 'server1' #this is the "in" node
+      
     
