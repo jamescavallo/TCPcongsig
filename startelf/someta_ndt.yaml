@@ -1,0 +1,34 @@
+# someta configuration example, yaml style
+someta:
+  command: bash ndthost.sh
+  outfilebase: c10_elf_ndt
+  verbose: true
+  quiet: false
+  uselogfile: false
+  statusinterval: 5s
+  monitorinterval: 1s
+  metaflushinterval: 10m
+  filerolloverinterval: 1h
+  warmcooltime: 2s
+  cpuaffinity: -1
+readme: |
+  Running NDT between c10 and host in mlab
+# metadata to include from dynamic system monitoring
+monitors:
+  - 
+    kind: cpu
+    interval: 1s
+  -
+    kind: mem
+    interval: 1s
+  -
+    kind: netstat
+    interval: 1s
+    # NB: leaving off device will cause all interfaces to be monitored
+    device: 
+      - eno2
+  - 
+    kind: ss
+    interval: 1s
+    cmdopts: 
+      - "-iemptba"
