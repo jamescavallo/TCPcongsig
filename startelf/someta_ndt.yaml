@@ -1,7 +1,7 @@
 # someta configuration example, yaml style
 someta:
   command: bash ndthost.sh
-  outfilebase: c10_elf_ndt
+  outfilebase: in_elf_ndt
   verbose: true
   quiet: false
   uselogfile: false
@@ -26,7 +26,7 @@ monitors:
     interval: 1s
     # NB: leaving off device will cause all interfaces to be monitored
     device: 
-      - eno2
+      - enp5s0f0
   - 
     kind: ss
     interval: 1s

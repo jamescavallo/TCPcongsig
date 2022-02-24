@@ -20,7 +20,7 @@ def main(query):
     if len(machines) > 0:
         print('#', ' '.join(machines))
     for url in xurls[:args.max]:
-        print(f'/home/jsommers/go/bin/ndt7-client -format json -service-url {url}')
+        print(f'$HOME/go/bin/ndt7-client -format json -service-url {url}')
     return len(xurls) > 0
 
 if __name__ == '__main__':
