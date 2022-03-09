@@ -1,7 +1,7 @@
 # someta configuration example, yaml style
 someta:
-  command: bash ndthost.sh
-  outfilebase: in_elf_ndt
+  command: bash start_iperf
+  outfilebase: in_elf_iperf
   verbose: true
   quiet: false
   uselogfile: false
@@ -12,7 +12,7 @@ someta:
   warmcooltime: 2s
   cpuaffinity: -1
 readme: |
-  Running NDT between c10 and host in mlab
+  Running Iperf between in and out in cloudlab
 # metadata to include from dynamic system monitoring
 monitors:
   - 
