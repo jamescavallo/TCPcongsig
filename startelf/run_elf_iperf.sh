@@ -16,7 +16,7 @@ ebpfpid=$!
 echo 'sleeping 5 sec; waiting for ELF startup'
 sleep 5
 
-~/local/go/bin/someta -y someta_iperf.yaml
+~/go/bin/someta -y someta_iperf.yaml
 
 sleep 2
 

@@ -1,6 +1,6 @@
 # someta configuration example, yaml style
 someta:
-  command: bash start_iperf
+  command: bash start_iperf.sh
   outfilebase: in_elf_iperf
   verbose: true
   quiet: false
