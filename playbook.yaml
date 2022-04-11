@@ -1,4 +1,4 @@
-- hosts: servers
+- hosts: all
   remote_user: jcavallo
   become: yes
   tasks:
@@ -7,7 +7,7 @@
         url: https://go.dev/dl/go1.17.7.linux-amd64.tar.gz
         dest: /users/jcavallo/go1.17.7.linux-amd64.tar.gz
         mode: '0440'
-    - name: Create directory
+    - name: Create directory for Go
       file:
         path: /users/jcavallo/local/go
         state: directory
@@ -15,24 +15,56 @@
       command: rm -rf /users/jcavallo/local/go 
     - name: Install Go pt2
       command: tar -C /users/jcavallo/local -xzf /users/jcavallo/go1.17.7.linux-amd64.tar.gz
-    - name : Install Someta on all Hosts
+    - name : Install Someta on all Hosts 
       command: chdir=/users/jcavallo/local/go/bin ./go install github.com/jsommers/someta@latest
+      become_user: jcavallo
+    - name: Check if ElF as been cloned in
+      stat:
+        path: /users/jcavallo/ELF
+      register: dir_details
     - name: Clone a repo with separate git directory
+      when: not dir_details.stat.exists
       git:
         repo: https://github.com/jsommers/ELF.git
         dest: /users/jcavallo/ELF
-    - name: Give insecure permissions to an existing file
-      file:
-        path: /users/jcavallo/ELF/exptscripts/cloudlab_setup.sh
-        mode: '0555'
     - name: Remove the rate limit on all hosts
       command: sysctl -w net.ipv4.icmp_ratelimit=0
       become: yes
       become_user: root
-    - name : Run Setup on the "in" node (This may take a while)
+    - name : Run ELF Setup manually PT 1
       become: yes
       become_user: root
-      shell: /users/jcavallo/ELF/exptscripts/cloudlab_setup.sh
-      when: ansible_hostname == 'server1' #this is the "in" node
+      shell: apt-get update && sudo apt-get install -y build-essential cmake git golang mtr linux-headers-$(uname -r) python3-pyroute2 python3-dev python3-pandas
+    - name : Run ELF Setup manually PT 2
+      become: yes
+      become_user: root
+      shell: go get -v github.com/m-lab/ndt7-client-go/cmd/ndt7-client
+    - name : Run ELF Setup manually PT 3
+      become: yes
+      become_user: root
+      shell: apt-get -y install bison build-essential cmake flex git libedit-dev llvm-dev libclang-dev python zlib1g-dev libelf-dev
+    - name : Run ELF Setup manually PT 4
+      become: yes
+      become_user: root
+      shell: apt-get -y install bison build-essential cmake flex git libedit-dev llvm-dev libclang-dev python zlib1g-dev libelf-dev
+    - name: Install python3-bpfcc
+      apt:
+        name: python3-bpfcc
+        state: present
+    - name: Check if TCPcongest as been cloned in
+      stat:
+        path: /users/jcavallo/TCPcongest
+      register: dir_details
+    - name: Clone in TCPConsig
+      when: not dir_details.stat.exists
+      git:
+        repo: https://github.com/jamescavallo/TCPcongsig.git
+        dest: /users/jcavallo/TCPcongest
+    - name: Add latency
+      command: "tc qdisc add dev eno2 root netem delay 10ms rate 1000mbit"
+      when: inventory_hostname in groups['router1']
+    - name: Add latency 2
+      command: "tc qdisc add dev eno2 root netem delay 10ms rate 1000mbit"
+      when: inventory_hostname in groups['router2']
       
     
