@@ -377,7 +377,7 @@ while (1):
     # dist.clear()
     lathash.clear()
 
-    _log_kernel_messages(b)
+    #_log_kernel_messages(b)
 
     if exiting or seconds >= args.duration:
         rcount = resultstate[0].value
